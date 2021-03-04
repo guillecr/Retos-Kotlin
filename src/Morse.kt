@@ -46,41 +46,59 @@ fun decodeMorse(mensaje : String): String{
     return salida
 }
 
-fun recursiva(numero : Int, cont : Int):String{
-    return if(cont > 0){
-        var salida = ""
-        for(n in 1..numero)
-            salida += ""+n + " + " + recursiva(numero,cont-1)
-        salida
+
+// =====================================================================================================================
+
+fun recursiva(mensaje: String, numero : Int, lista : List<Int>, palabras : Set<String>):Set<String>{
+    val listTrata = lista.toMutableList()
+    val palabrasTrata = palabras.toMutableSet()
+
+    return if(lista.size < numero){
+
+        listTrata.add(listTrata.size,0)
+        for(n in 1..4) {
+            listTrata[listTrata.size-1] = n
+            palabrasTrata.addAll(recursiva(mensaje, numero, listTrata, palabrasTrata))
+        }
+        palabrasTrata
     }else{
-        "\n"
+        var test = true
+        var cont = 0
+        var codeOK = ""
+        if(lista.sum() == mensaje.length){
+            for(n in lista){
+                val c = mensaje.substring(cont,n+cont)
+                codeOK += mensaje.substring(cont,n+cont) + " "
+                if (code.filterValues { it == c }.keys.isEmpty()) test = false
+                cont += n
+            }
+        }else test = false
+
+        val salida = if(test) decodeMorse(codeOK) else ""
+        return setOf(salida)
     }
 }
 
-fun decodeMorseA(mensaje : String, palabras : Int): String{
-    var lista : String
-    var sizeM = mensaje.length
-    var max = palabras*4
-    //num = sizeM/palabras
-
-
-
-    return recursiva(4,4)
+fun funcionLoca(codigoMal : String, numperoPalabras : Int): Set<String>{
+    val lista : List<Int> = arrayListOf()
+    val palabras : Set<String> = setOf()
+    val salida = recursiva(codigoMal,numperoPalabras,lista,palabras).toMutableSet()
+    salida.removeIf { it == "" }
+    return salida
 }
 
-fun main(){
-    println(recursiva(4,4))
-}
-
-/*
 fun main(){
     println("Morse")
     println("Escriba el mensaje")
-    var mes = readLine()
-    var mensaje = mes.toString().trim().toUpperCase()
+    val readText = readLine()
+    val mensaje = readText.toString().trim().toUpperCase()
     println("El mensaje es $mensaje")
-    var traducido = codeMorse(mensaje)
-    println("El mensaje traducido es: $traducido")
-    print(decodeMorse(traducido))
+    val morse = codeMorse(mensaje)
+    println("El mensaje en morse es: $morse")
+    println("Vuelto a traducir:" + decodeMorse(morse))
+    val morseMal = morse.replace(" ", "")
+    val palabras = funcionLoca(morseMal,mensaje.length)
+    println("El codigo sin espacios es $morseMal, que daria como opciones: ")
+    for(p in palabras)
+        println("\t - $p")
 }
- */
